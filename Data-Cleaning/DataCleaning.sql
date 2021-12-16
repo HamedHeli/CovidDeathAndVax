@@ -4,7 +4,7 @@ SELECT *
 
 
 
-  begin tran
+  BEGIN TRAN
 
   /*
 =======================================================================
@@ -15,19 +15,21 @@ SELECT *
 =======================================================================
   */	
 
-  With CTEDuplicate as
+  WITH CTEDuplicate AS
   (
-  Select *, row_number () over (partition by ParcelID, SaleDAte, SalePRice, LegalReference order by ParcelID) row_num
-   FROM [Nashville Housing Data].[dbo].[NashvilleHousingData] 
-   )
-
-   select *  
-   from CTEDuplicate
-   where row_num <> 1
-
-
-
-
+  SELECT *, 
+  	row_number () over (partition by ParcelID, SaleDAte, SalePRice, LegalReference order by ParcelID) row_num
+  
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] 
+   									)
+   SELECT 
+   	*  
+   FROM 
+   	CTEDuplicate
+   WHERE 
+   	row_num <> 1
+   
 
   /*
 =======================================================================
@@ -39,51 +41,85 @@ SELECT *
   */
 
   -- check if the rows with the same ParcelID have the same PropertyAddress
-  select T1.ParcelID, T1.PropertyAddress, T2.ParcelID, T2.PropertyAddress 
-  from [Nashville Housing Data].[dbo].[NashvilleHousingData] T1
-  join [Nashville Housing Data].[dbo].[NashvilleHousingData] T2
-  --where PropertyAddress is null
-  on T1.ParcelID = T2.ParcelID
-  AND T1.UniqueID <> T2.UniqueID
-  where T1.PropertyAddress is null
+  
+  
+  SELECT 
+  	T1.ParcelID, 
+  	T1.PropertyAddress, 
+	T2.ParcelID, 
+	T2.PropertyAddress 
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] T1
+  JOIN 	
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] T2
+  
+  ON 
+  	T1.ParcelID = T2.ParcelID
+  AND 
+  	T1.UniqueID <> T2.UniqueID
+  
+  WHERE 
+  	T1.PropertyAddress is null
 
 
   -- substituting the PropertyAddress from the rows with the same ParcelID
 
-  update T1
-  SET T1.PropertyAddress = T2.PropertyAddress
-  from [Nashville Housing Data].[dbo].[NashvilleHousingData] T1
-  join [Nashville Housing Data].[dbo].[NashvilleHousingData] T2
-  --where PropertyAddress is null
-  on T1.ParcelID = T2.ParcelID
-  AND T1.UniqueID <> T2.UniqueID
-  where T1.PropertyAddress is null
+  UPDATE T1
+  SET 	
+  	T1.PropertyAddress = T2.PropertyAddress
+  
+ 
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] T1
+  JOIN 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] T2
+  
+  ON 
+  	T1.ParcelID = T2.ParcelID
+  AND 
+  	T1.UniqueID <> T2.UniqueID
+  WHERE 
+  	T1.PropertyAddress is null
 
   -- separating the stress and city from the address
 
-  SELECT Substring(PropertyAddress, 1, CHARINDEX(',',PropertyAddress)-1) as Adress, 
-         Substring(PropertyAddress, CHARINDEX(',',PropertyAddress)+1 , LEN(PropertyAddress)) as City
-  from [Nashville Housing Data].[dbo].[NashvilleHousingData] 
+  SELECT 
+  	Substring(PropertyAddress, 1, CHARINDEX(',',PropertyAddress)-1) AS Adress, 
+         Substring(PropertyAddress, CHARINDEX(',',PropertyAddress)+1 , LEN(PropertyAddress)) AS City
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData] 
 
 
-  Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  add PropertyStreet nvarchar(255)
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  ADD PropertyStreet nvarchar(255)
 
-  Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  set PropertyStreet = Substring(PropertyAddress, 1, CHARINDEX(',',PropertyAddress)-1)
+  UPDATE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SET 
+  	PropertyStreet = Substring(PropertyAddress, 1, CHARINDEX(',',PropertyAddress)-1)
 
-  Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  add PropertyCity nvarchar(255)
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  ADD 
+  	PropertyCity nvarchar(255)
 
-  Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  set PropertyCity = Substring(PropertyAddress, CHARINDEX(',',PropertyAddress)+1 , LEN(PropertyAddress))
+  UPDATE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SET 
+  	PropertyCity = Substring(PropertyAddress, CHARINDEX(',',PropertyAddress)+1 , LEN(PropertyAddress))
 
-  select OwnerAddress, ParcelID
-  from [Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SELECT 
+  	OwnerAddress, 
+	ParcelID
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
 
   -- now delete the column PropertyAddress (It is better to copy the database before running this) 
-  Alter table  [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  drop column PropertyAddress 
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  DROP COLUMN 
+  	PropertyAddress 
   
   /*
 =======================================================================
@@ -92,28 +128,42 @@ SELECT *
   */
 
 
-Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  add OwnerAddressStreet nvarchar(255)
+ALTER TABLE 
+	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+ADD 
+	OwnerAddressStreet nvarchar(255)
 
- Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  set OwnerAddressStreet = PARSENAME(REPLACE(OwnerAddress,',','.'),3)
+ UPDATE 
+ 	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+ SET 
+ 	OwnerAddressStreet = PARSENAME(REPLACE(OwnerAddress,',','.'),3)
 
-  Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  add OwnerAddressCity nvarchar(255)
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  ADD 
+  	OwnerAddressCity nvarchar(255)
 
-  Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  set OwnerAddressCity = PARSENAME(REPLACE(OwnerAddress,',','.'),2)
+  UPDATE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SET 
+  	OwnerAddressCity = PARSENAME(REPLACE(OwnerAddress,',','.'),2)
 
-  Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  add OwnerAddressState nvarchar(255)
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  ADD 
+  	OwnerAddressState nvarchar(255)
 
-  Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  set OwnerAddressState = PARSENAME(REPLACE(OwnerAddress,',','.'),1)
+  UPDATE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SET 
+  	OwnerAddressState = PARSENAME(REPLACE(OwnerAddress,',','.'),1)
 
  -- now delete the owneraddress (it is better to copy the dataset before running this line) 
   
-  Alter table  [Nashville Housing Data].[dbo].[NashvilleHousingData]
-  drop column OwnerAddress 
+  ALTER TABLE 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+  DROP COLUMN 
+  	OwnerAddress 
 
 
   /*
@@ -125,23 +175,31 @@ Alter Table [Nashville Housing Data].[dbo].[NashvilleHousingData]
 
   -- check which format is more common 
 
-  Select SoldAsVacant, count(SoldAsVacant)
-  FROM [Nashville Housing Data].[dbo].[NashvilleHousingData]
+  SELECT 
+  	SoldAsVacant, 
+	count(SoldAsVacant)
+  FROM 
+  	[Nashville Housing Data].[dbo].[NashvilleHousingData]
 
-  group by SoldAsVacant
-  order by count(SoldAsVacant)
+  GRPUP BY 
+  	SoldAsVacant
+  ORDER BY 
+  	count(SoldAsVacant)
 
  -- make the format consisten 
 
  
- Update [Nashville Housing Data].[dbo].[NashvilleHousingData]
- SET SoldAsVacant = 	Case 
-								When SoldAsVacant = 'Y' then 'Yes'
-								When SoldAsVacant = 'N' then 'No'
-								Else SoldAsVacant
-						End
+ UPDATE 
+ 	[Nashville Housing Data].[dbo].[NashvilleHousingData]
+ SET 
+ 	SoldAsVacant = 	Case 
+				When SoldAsVacant = 'Y' then 'Yes'
+				When SoldAsVacant = 'N' then 'No'
+				Else SoldAsVacant
+			End
  
 
 
- select *
- from [Nashville Housing Data].[dbo].[NashvilleHousingData]
+ SELECT *
+ FROM
+ 	[Nashville Housing Data].[dbo].[NashvilleHousingData]
