@@ -26,10 +26,14 @@ First start with CovidDeaths table
 */
 
 
-Select *
-from Covid19..CovidVax
-where continent <> ' ' 
-order by 3,4
+SELECT 
+	*
+FROM 
+	Covid19..CovidVax
+WHERE 
+	continent <> ' ' 
+ORDER BY
+	3,4
 
 /*
 ===========================================
@@ -50,17 +54,35 @@ Defining metric for initial data insights
 
 	-- mortality_ratio ( = total_deaths / total_cases)
 
-	Select location, population, date, total_cases, total_deaths, (try_cast(total_deaths as float)/nullif(try_cast(total_cases as float),0))*100 as mortality_rate
-	from Covid19..CovidDeaths
-	where continent <> ' '  
-	order by 1
+SELECT 
+	location, 
+	population, 
+	date, 
+	total_cases, 
+	total_deaths, 
+	(try_cast(total_deaths as float)/nullif(try_cast(total_cases as float),0))*100 as mortality_rate
+FROM 
+	Covid19..CovidDeaths
+WHERE 
+	continent <> ' '  
+ORDER BY
+	1
 
 	--  infection ratio (= total_cases / population)
 	
-	Select location, population, date, total_cases, total_deaths, (try_cast(total_cases as float)/nullif(try_cast(population as float),0))*100 as infection_ratio
-	from Covid19..CovidDeaths
-	where continent <> ' ' 
-	order by 1
+SELECT 
+	location, 
+	population, 
+	date, 
+	total_cases, 
+	total_deaths, 
+	(try_cast(total_cases as float)/nullif(try_cast(population as float),0))*100 AS infection_ratio
+FROM 
+	Covid19..CovidDeaths
+WHERE 
+	continent <> ' ' 
+ORDER BY 
+	1
 
 /*
 ===========================================
@@ -70,34 +92,66 @@ Initial data insights
 
 
 	-- countries with the highest number of total_cases 
-	select location, population, MAX(cast(total_cases as float)) as max_total_cases, MAX(cast (total_cases as float)/nullif(cast(population as float),0))*100 as max_infection_ratio_percent
-	from Covid19..CovidDeaths
-	where continent <> ' '  
-	group by location, population
-	order by 4 desc
+SELECT 
+	location, 
+	population, 
+	MAX(cast(total_cases as float)) AS max_total_cases, 
+	MAX(cast (total_cases as float)/nullif(cast(population as float),0))*100 AS max_infection_ratio_percent
+FROM 
+	Covid19..CovidDeaths
+WHERE 
+	continent <> ' '  
+GROUO BY 
+	location, 
+	population
+ORDER BY 
+	4 desc
 	 
 
 	 -- countries with the highest number of total_deaths 
-	select location, population, MAX(cast(total_deaths as float)) as max_total_deaths, MAX(cast (total_deaths as float)/nullif(cast(population as float),0))*100 as max_total_deaths_per_population_percent
-	from Covid19..CovidDeaths
-	where continent <> ' '  
-	group by location, population
-	order by 4 desc
+SELECT 
+	location, 
+	population, 
+	MAX(cast(total_deaths as float)) AS max_total_deaths, 
+	MAX(cast (total_deaths as float)/nullif(cast(population as float),0))*100 AS max_total_deaths_per_population_percent
+FROM 
+	Covid19..CovidDeaths
+WHERE 
+	continent <> ' '  
+GROUP BY 
+	location, 
+	population
+ORDER BY 
+	4 desc
 
 	-- regions with the highest number of total_deaths
-	select Location, MAX(cast(total_deaths as float)) as max_total_deaths, MAX(cast (total_deaths as float)/nullif(cast(population as float),0))*100 as max_total_deaths_per_population_percent
-	from Covid19..CovidDeaths
-	where continent = ' '  
-	group by location
-	order by 3 desc
+SELECT 
+	Location, 
+	MAX(cast(total_deaths as float)) AS max_total_deaths, 
+	MAX(cast (total_deaths as float)/NULLIF(CAST(population AS float),0))*100 AS max_total_deaths_per_population_percent
+FROM 
+	Covid19..CovidDeaths
+WHERE 
+	continent = ' '  
+GROUP BY 
+	location
+ORDER BY 
+	3 desc
 
 	-- Global data over time
-	select date, SUM(cast(total_cases as float)) as total_cases_global, SUM(cast(total_cases as float))/MAX(cast(population as float))*100 as total_cases_per_population_percentage,
+SELECT 
+	date, 
+	SUM(cast(total_cases as float)) as total_cases_global, 
+	SUM(cast(total_cases as float))/MAX(cast(population as float))*100 as total_cases_per_population_percentage,
 	SUM(cast(total_deaths as float)) as total_death_global, SUM(cast(total_deaths as float))/MAX(cast(population as float))*100 as total_death_per_population_global
-	FROM Covid19..CovidDeaths
-	where continent = ' '  and location = 'World'
-	group by date
-	order by 1
+FROM 	
+	Covid19..CovidDeaths
+WHERE 
+	continent = ' '  and location = 'World'
+GROUP BY 
+	date
+ORDER BY 
+	1
 
 /*
 ===========================================
@@ -112,25 +166,43 @@ And then continue deriving initial insights
 
 	-- Vaccination Per Country
 
-	select dea.continent, dea.location, dea.date, dea.population, vax.people_vaccinated, 
-	cast(people_vaccinated as float)/nullif(cast(dea.population as float),0)*100 as percent_of_vaccinated_per_population
-	From Covid19..CovidDeaths dea
-	Join Covid19..CovidVax vax
-	on dea.location = vax.location
-	AND dea.date = vax.date 
-	order by 2
+SELECT 
+	dea.continent, 
+	dea.location, 
+	dea.date, 
+	dea.population, 
+	vax.people_vaccinated, 
+	CAST(people_vaccinated as float)/nullif(cast(dea.population as float),0)*100 AS percent_of_vaccinated_per_population
+FROM 
+	Covid19..CovidDeaths dea
+JOIN 
+	Covid19..CovidVax vax
+ON
+	dea.location = vax.location
+AND 
+	dea.date = vax.date 
+ORDER BY 
+	2
 
 
 	
 	-- Vaccination in Global
 
-	select dea.continent,  MAX(cast(vax.people_vaccinated as float))/nullif(MAX(cast(dea.population as float)),0)*100 as percent_of_vaccinated_per_population
-	From Covid19..CovidDeaths dea
-	Join Covid19..CovidVax vax
-	on dea.location = vax.location
-	AND dea.date = vax.date 
-	where dea.continent <> ''
-	group by dea.continent
+SELECT 
+	dea.continent,  
+	MAX(cast(vax.people_vaccinated as float))/nullif(MAX(cast(dea.population as float)),0)*100 as percent_of_vaccinated_per_population
+FROM 
+	Covid19..CovidDeaths dea
+JOIN 
+	Covid19..CovidVax vax
+ON 
+	dea.location = vax.location
+AND 
+	dea.date = vax.date 
+WHERE 
+	dea.continent <> ''
+GROUP BY 
+	dea.continent
 
 /*
 ===========================================
@@ -140,41 +212,76 @@ Later on, we will create a table from this CTE
 */
 
 
-	with Population_death_vaccination (location, population, date, new_daths, total_deaths, new_vaccination, total_vaccination, percentage_of_vaccination)
-	as
+WITH Population_death_vaccination (location, population, date, new_daths, total_deaths, new_vaccination, total_vaccination, percentage_of_vaccination)
+	AS
 	(
-	select dea.location, dea.population, dea.date, dea.new_deaths, dea.total_deaths, vax.new_vaccinations,  
-	sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date) as total_vaccination, 
-	(sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 as 
-	percentage_of_vaccination
+SELECT 
+	dea.location, 
+	dea.population, 
+	dea.date, 
+	dea.new_deaths, 
+	dea.total_deaths, 
+	vax.new_vaccinations,  
+	SUM (cast (vax.new_vaccinations as float)) OVER (partition by dea.location order by dea.location,  dea.date) AS total_vaccination, 
+	(SUM (cast (vax.new_vaccinations as float)) OVER (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 AS percentage_of_vaccination
+FROM 
+	Covid19..CovidDeaths dea
+JOIN 
+	Covid19..CovidVax vax
+ON 
+	dea.location = vax.location
+AND 
+	dea.date = vax.date 
+WHERE 
+	dea.continent <> ''
 	
-	From Covid19..CovidDeaths dea
-	Join Covid19..CovidVax vax
-	on dea.location = vax.location
-	AND dea.date = vax.date 
-	where dea.continent <> ''
 	)
-	select *
-	from Population_death_vaccination
+	
+SELECT 
+	*
+FROM 
+	Population_death_vaccination
 
 	-- creating a table
 
-	drop table if exists PopVsDeathVsVax
-	create table PopVsDeathVsVax (
-	location nvarchar(225), population nvarchar(225), date date, new_deaths numeric, total_deaths numeric, new_vaccination numeric, total_vaccination numeric, percentage_of_vaccination numeric)
+DROP TABLE IF EXISTS PopVsDeathVsVax
 
-	Insert into PopVsDeathVsVax
+CREATE TABLE 
 	
-	select dea.location, dea.population, dea.date, cast(dea.new_deaths as float), cast( dea.total_deaths as float), cast( vax.new_vaccinations as float),  
-	sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date) as total_vaccination, 
-	(sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 as 
+	PopVsDeathVsVax (
+	location nvarchar(225), 
+	population nvarchar(225), 
+	date date, 
+	new_deaths numeric, 
+	total_deaths numeric, 
+	new_vaccination numeric, 
+	total_vaccination numeric, 
+	percentage_of_vaccination numeric)
+
+INSERT INTO 
+	PopVsDeathVsVax
+	
+SELECT 
+	dea.location, 
+	dea.population, 
+	dea.date, 
+	CAST(dea.new_deaths as float), 
+	CAST( dea.total_deaths as float), 
+	CAST( vax.new_vaccinations as float),  
+	SUM (cast (vax.new_vaccinations as float)) OVER (partition by dea.location order by dea.location,  dea.date) AS total_vaccination, 
+	(SUM (cast (vax.new_vaccinations as float)) OVER (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 AS 
 	percentage_of_vaccination
 	
-	From Covid19..CovidDeaths dea
-	Join Covid19..CovidVax vax
-	on dea.location = vax.location
-	AND dea.date = vax.date 
-	where dea.continent <> ''
+FROM 
+	Covid19..CovidDeaths dea
+JOIN 
+	Covid19..CovidVax vax
+ON 
+	dea.location = vax.location
+AND 
+	dea.date = vax.date 
+WHERE 
+	dea.continent <> ''
 	
 /*
 ===========================================
@@ -186,16 +293,27 @@ Finally we make a view that includes the information we want to visualize later 
 	-- creating a veiw
 	
 	
-	drop view if exists Population_death_vaccination
-	Go
-	create view Population_death_vaccination as 
-	select dea.location, dea.population, dea.date, cast(vax.new_vaccinations as float) as new_vaccination,  
-	sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date) as total_vaccination, 
-	(sum (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 as 
-	percentage_of_vaccination
+DROP VIEW IF EXISTS Population_death_vaccination
 	
-	From Covid19..CovidDeaths dea
-	Join Covid19..CovidVax vax
-	on dea.location = vax.location
-	AND dea.date = vax.date 
-	where dea.continent <> ''
+GO
+CREATE VIEW 
+	Population_death_vaccination AS 
+	
+	SELECT 
+		dea.location, 
+		dea.population, 
+		dea.date, 
+		CAST(vax.new_vaccinations as float) AS new_vaccination,  
+		SUM (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date) as total_vaccination, 
+		(SUM (cast (vax.new_vaccinations as float)) over (partition by dea.location order by dea.location,  dea.date)) / nullif(cast (dea.population as float),0)*100 as percentage_of_vaccination
+	
+	FROM 
+		Covid19..CovidDeaths AS dea
+	JOIN 
+		Covid19..CovidVax AS vax
+	ON 
+		dea.location = vax.location
+	AND 
+		dea.date = vax.date 
+	WHERE 
+		dea.continent <> ''
