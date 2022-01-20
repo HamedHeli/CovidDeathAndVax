@@ -5,7 +5,7 @@ Here, I am describing some of the SQL projects that I have done. The projects ha
 Two projects are included:
   * :mask: [Covi-19 Data Exploration](https://github.com/HamedHeli/PythonProjects/blob/016d47925324a5e1714614c3592f54bab88cb5ab/Bank%20Stock%20Market/Bank%20Stock%20After%20Covid%20.ipynb) (completed): 
       
-      In this project, I got Covid death and vaccination data from [ourworldindata website](https://ourworldindata.org/), cleaned data, and derived initial insights. The following transactions are done on the data:
+      In this project, I got Covid death and vaccination data from [ourworldindata website](https://ourworldindata.org/), cleaned data, and derived initial insights. The following transactions have been performed:
       
       * Joining Data to Collect Information in the Same Table 
       * Data Cleaning and Creating Pivot Table 
