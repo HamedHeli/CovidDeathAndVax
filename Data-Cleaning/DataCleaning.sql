@@ -1,4 +1,6 @@
 /****** Script for SelectTopNRows command from SSMS  ******/
+-- The data are obtained from https://www.kaggle.com/tmthyjames/nashville-housing-data-1
+
 SELECT *
   FROM [Nashville Housing Data].[dbo].[NashvilleHousingData]
 
