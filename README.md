@@ -17,6 +17,6 @@ Two projects are included:
       
       In this project, I cleaned housing market data. The data cleaning procedure includes the following transactions:
       
-      * Detecting Null values and filling them by using the data from other rows  
+      * Detecting null values and filling them by using the data from other rows  
       * Breaking the address into stress, city, and states 
       * Discovering incosistency in data and modify the information so each column has consistent data 
