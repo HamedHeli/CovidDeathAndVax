@@ -11,7 +11,7 @@ The project includes the following:
 	- Creating a view from CTE
 
 
-Dat Source: https://ourworldindata.org/covid-deaths
+Data Source: https://ourworldindata.org/covid-deaths
 The data are stored in Covid19 database in two tables: 
 	1. CovidDeaths: demonstrating the number of people who have died
 	2. CovidVax: demonstrating the vaccination progress 
