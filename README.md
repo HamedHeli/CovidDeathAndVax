@@ -9,7 +9,7 @@ Two projects are included:
       
       This project includes the common transactions for ETL process; I use it as a reference. Few examples of the transactions are as follows:
       
-     * Implementing Lookup function in SQL by using JOIN and UNION
+     * Implementing Lookup function in SQL by using JOIN, UNION, and CTE
      * Checking fonr NULL or a string trend in the data
      * Using CASE, COALENSCE, and PARTITION
 
