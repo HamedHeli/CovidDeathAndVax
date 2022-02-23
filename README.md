@@ -4,9 +4,9 @@
 Here, I am describing some of the SQL projects that I have done. The projects have been performed inspired by the courses that I took or my personal intersts. 
 Two projects are included:
 
-  * :scroll: [Common ETL Transactions](https://github.com/HamedHeli/SQLProjects/blob/5c748806b697c943f0e1612d8cc93c01e8a886d5/ETL-Transactions/ETL_Transactions.sql) (completed): 
+  * :scroll: [Common t-sql Transactions](https://github.com/HamedHeli/SQLProjects/blob/5c748806b697c943f0e1612d8cc93c01e8a886d5/ETL-Transactions/ETL_Transactions.sql) (completed): 
       
-      This project includes the common transactions for ETL process; I use it as a reference. Few examples of the transactions are as follows:
+      This project includes the common transactions in SSMS; I use it as a reference. Few examples of the transactions are as follows:
       
      * Implementing Lookup function in SQL by using JOIN, UNION, and CTE
      * Checking fonr NULL or a string trend in the data
